@@ -1,0 +1,23 @@
+experiment:
+  id:          "01"
+  name:        "zero_shot_baseline"
+  description: "Zero-shot mT5-small. No fine-tuning. Establishes floor score."
+
+model:
+  name:     "google/mt5-small"
+  use_4bit: false
+
+preprocessing:
+  max_input_length:  512
+  max_target_length: 200
+  seed:              42
+
+generation:
+  max_new_tokens:       200
+  num_beams:            4
+  no_repeat_ngram_size: 3
+  early_stopping:       true
+  batch_size:           8
+
+submission:
+  output_path: "outputs/submissions/exp01_zero_shot_baseline.csv"
