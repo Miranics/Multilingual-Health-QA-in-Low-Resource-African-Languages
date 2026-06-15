@@ -6,12 +6,16 @@ from src.utils.helpers import get_logger
 
 logger = get_logger(__name__)
 
-SUPPORTED_LANGUAGES = {
-    "akan":    ["Ghana"],
-    "amharic": ["Ethiopia"],
-    "luganda": ["Uganda"],
-    "swahili": ["Kenya", "Tanzania", "Uganda"],
-    "english": ["Ghana", "Uganda", "Kenya"],
+SUBSET_MAP = {
+    "Aka_Gha": ("Akan",    "Ghana"),
+    "Amh_Eth": ("Amharic", "Ethiopia"),
+    "Lug_Uga": ("Luganda", "Uganda"),
+    "Swa_Ken": ("Swahili", "Kenya"),
+    "Swa_Tan": ("Swahili", "Tanzania"),
+    "Swa_Uga": ("Swahili", "Uganda"),
+    "Eng_Gha": ("English", "Ghana"),
+    "Eng_Uga": ("English", "Uganda"),
+    "Eng_Ken": ("English", "Kenya"),
 }
 
 
@@ -24,7 +28,7 @@ def clean_text(text: str) -> str:
 
 
 def build_prompt(question: str, language: str, country: str = "") -> str:
-    header = f"Language: {language.capitalize()}"
+    header = f"Language: {language}"
     if country:
         header += f" | Country: {country}"
     return f"{header}\nQuestion: {question}\nAnswer:"
@@ -32,15 +36,13 @@ def build_prompt(question: str, language: str, country: str = "") -> str:
 
 def prepare_dataframe(df: pd.DataFrame, is_test: bool = False) -> pd.DataFrame:
     df = df.copy()
-    df["prompt"]   = df["prompt"].apply(clean_text)
-    df["language"] = df["language"].str.strip().str.lower()
-    if "country" in df.columns:
-        df["country"] = df["country"].str.strip()
+    df["language"] = df["subset"].map(lambda s: SUBSET_MAP.get(s, (s, ""))[0])
+    df["country"]  = df["subset"].map(lambda s: SUBSET_MAP.get(s, ("", s))[1])
+    df["input_clean"] = df["input"].apply(clean_text)
     if not is_test:
-        df["response"] = df["response"].apply(clean_text)
+        df["output_clean"] = df["output"].apply(clean_text)
     df["prompt_text"] = df.apply(
-        lambda r: build_prompt(r["prompt"], r["language"], r.get("country", "")),
-        axis=1,
+        lambda r: build_prompt(r["input_clean"], r["language"], r["country"]), axis=1
     )
     return df
 
@@ -49,7 +51,7 @@ def build_hf_dataset(
     df: pd.DataFrame,
     tokenizer: PreTrainedTokenizer,
     prompt_col: str = "prompt_text",
-    answer_col: str = "response",
+    answer_col: str = "output_clean",
     max_input_length: int = 512,
     max_target_length: int = 200,
 ) -> Dataset:
