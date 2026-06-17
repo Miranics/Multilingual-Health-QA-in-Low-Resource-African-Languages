@@ -1,0 +1,2 @@
+experiment,lora_r,lora_alpha,targets,epochs,rouge1,rougeL,zindi_lb
+Exp 05,16,32,"q,k,v,o,wi,wo",3,0.1577,0.1295,
