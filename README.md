@@ -7,7 +7,7 @@ Final project for Machine Learning Techniques I — Zindi Competition.
 
 ---
 
-## Project structure
+## Project structure...
 
 ```
 ├── data/
