@@ -49,7 +49,7 @@ The final score is the weighted mean of the three metrics: `0.37 × ROUGE-1 + 0.
 │   └── 11_finetuning.ipynb      # Lower learning rate (champion, 0.2700)
 ├── report/
 │   └── Nanen_Mbanaade_FinalProject.pdf
-├── screenshots/                 # Leaderboard score & ranking evidence
+├── assets/                 # Leaderboard score & ranking evidence
 ├── outputs/                     # Submission CSVs, learning curves, plots
 └── README.md
 ```
